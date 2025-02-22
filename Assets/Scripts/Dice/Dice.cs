@@ -25,11 +25,6 @@ public class Dice : MonoBehaviour
         isChosen = false;
     }
 
-    public void onMouseClick()
-    {
-        onDiceChosen?.Invoke(this);
-    }
-
     public Side GetCurrentSide()
     {
         return currentSide;
@@ -38,7 +33,7 @@ public class Dice : MonoBehaviour
     public void Chosen()
     {
         isChosen = true;
-        diceVisualController.ChosenPlaceHolder();
+        diceVisualController.ChosenColor();
     }
     
     public void UnChosen()
@@ -51,14 +46,18 @@ public class Dice : MonoBehaviour
 
     private void Start()
     {
-        diceVisualController = GetComponent<DiceVisualController>();
-        SetSide(0);
+        diceVisualController = GetComponentInChildren<DiceVisualController>();
+        Roll();
     }
 
     private void SetSide(int sideNum)
     {
         currentSide = sides[sideNum];
-        diceVisualController.SetSideSprite(currentSide.GetValue());
+        diceVisualController.SetSideMesh(currentSide.GetValue());
     }
-    
+
+    private void OnMouseUp()
+    {
+        onDiceChosen?.Invoke(this);
+    }
 }

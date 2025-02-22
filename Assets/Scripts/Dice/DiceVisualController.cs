@@ -1,42 +1,58 @@
+using System;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class DiceVisualController : MonoBehaviour
 {
-    [SerializeField] private Sprite[] sideSprites;
-
-    private Image spriteImage;
-    private RectTransform rectTransform;
+    [SerializeField] private MeshRenderer[] meshes;
     
-    public void SetSideSprite(int sideSpriteNum)
+    private RectTransform rectTransform;
+    private Outline outline;
+    
+    public void SetSideMesh(int sideValue)
     {
-        spriteImage.sprite = sideSprites[sideSpriteNum - 1];
+        foreach (var meshRenderer in meshes)
+        {
+            meshRenderer.enabled = false;
+        }
+
+        meshes[sideValue - 1].enabled = true;
+        
         RandomizeRotation();
     }
     
-    public void ChosenPlaceHolder()
+    public void ChosenColor()
     {
-        spriteImage.color = Color.cyan;
+        outline.OutlineColor = Color.green;
     }
 
     public void DefaultColor()
     {
-        spriteImage.color = Color.white;
+        outline.OutlineColor = Color.black;
     }
 
     // _____________ Private _____________
     
     private void Start()
     {
-        spriteImage = GetComponent<Image>();
-        rectTransform = GetComponent<RectTransform>();
+        outline = GetComponent<Outline>();
     }
     
     private void RandomizeRotation()
     {
         var randomAngle = Random.Range(0f, 360f);
-        rectTransform.rotation = Quaternion.Euler(0f, 0f, randomAngle);
+        transform.rotation = Quaternion.Euler(0f, randomAngle, 0f);
     }
-    
+
+    private void OnMouseDown()
+    {
+        transform.localScale = Vector3.one * 0.9f;
+    }
+
+    private void OnMouseUp()
+    {
+        transform.localScale = Vector3.one * 1f;
+    }
 }
