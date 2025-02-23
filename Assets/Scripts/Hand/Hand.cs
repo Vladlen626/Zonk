@@ -1,78 +1,50 @@
-using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
+
 
 public class Hand : MonoBehaviour
 {
     [SerializeField] private Dice[] dicesDeck;
-    [SerializeField] private TextMeshProUGUI pointsTMP;
-    private List<Dice> handDices = new List<Dice>();
-    private List<Dice> savedDices = new List<Dice>();
-    private List<Dice> chosenDices = new List<Dice>();
+    [SerializeField] private ReRollCup reRollCup;
+
+    private SavedDiceController savedDices;
+    private RollDiceController rollDices;
+    private ChosenDiceController chosenDices;
     
     public void RollDices()
     {
-        foreach (var dice in handDices)
-        {
-            dice.Roll();
-        }
-
-        if (Combinator.Instance.GetScore(handDices.ToArray(), true) <= 0)
-        {
-            Debug.Log("NoCombination");
-        }
-    }
-    
-    public void SaveDices()
-    {
-        savedDices.Clear();
-        foreach (var chosenDice in chosenDices)
-        {
-            handDices.Remove(chosenDice);
-            savedDices.Add(chosenDice);
-        }
+        if (savedDices.SaveDices(chosenDices.GetDices()))
+            rollDices.RemoveDices(chosenDices.GetDices());
+        chosenDices.ClearDices();
+        
+        if (!rollDices.RollDices()) return;
+        EndTurn();
     }
 
     // _____________ Private _____________
-    
+
     private void Start()
     {
+        savedDices = GetComponent<SavedDiceController>();
+        rollDices = GetComponent<RollDiceController>();
+        chosenDices = GetComponent<ChosenDiceController>();
         StartTurn();
     }
 
     private void StartTurn()
     {
-        handDices.Clear();
-        foreach (var dice in dicesDeck)
-        {
-            handDices.Add(dice);
-            dice.onDiceChosen.AddListener(HandleNewChosenDice);
-        }
-    }
-    
-    private void HandleNewChosenDice(Dice newChosenDice)
-    {
-        if (chosenDices.Contains(newChosenDice))
-        {
-            chosenDices.Remove(newChosenDice);
-            newChosenDice.UnChosen();
-        } else
-        {
-            chosenDices.Add(newChosenDice);
-            newChosenDice.Chosen();
-        }
-        
-        if (chosenDices.Count > 0)
-        {
-            UpdateScore(Combinator.Instance.GetScore(chosenDices.ToArray()));
-        }
+        rollDices.FillDices(dicesDeck);
+        reRollCup.OnReRoll.AddListener(RollDices);
+        chosenDices.SubscribeOnDiceChosen(dicesDeck);
     }
 
-    private void UpdateScore(int score)
+    private void EndTurn()
     {
-        pointsTMP.text = score.ToString();
+        savedDices.ResetScore();
+        savedDices.ClearDices();
+        reRollCup.OnReRoll.RemoveAllListeners();
+        chosenDices.ClearDices();
     }
     
+   
 }
