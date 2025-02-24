@@ -6,44 +6,74 @@ public class Hand : MonoBehaviour
 {
     [SerializeField] private Dice[] dicesDeck;
     [SerializeField] private ReRollCup reRollCup;
+    [SerializeField] private EndTurnButton endTurnButton;
 
     private SavedDiceController savedDices;
     private RollDiceController rollDices;
     private ChosenDiceController chosenDices;
-    
-    public void RollDices()
-    {
-        if (savedDices.SaveDices(chosenDices.GetDices()))
-            rollDices.RemoveDices(chosenDices.GetDices());
-        chosenDices.ClearDices();
-        
-        if (!rollDices.RollDices()) return;
-        EndTurn();
-    }
-
-    // _____________ Private _____________
+    private ScoreController scoreController;
 
     private void Start()
+    {
+        Init();
+        StartTurn();
+    }
+
+    private void Init()
     {
         savedDices = GetComponent<SavedDiceController>();
         rollDices = GetComponent<RollDiceController>();
         chosenDices = GetComponent<ChosenDiceController>();
-        StartTurn();
+        scoreController = GetComponent<ScoreController>();
+    }
+
+    private void SaveDices()
+    {
+        if (savedDices.SaveDices(chosenDices.GetDices()))
+            rollDices.RemoveDices(chosenDices.GetDices());
+    }
+    
+    private void HandleRollDices()
+    {
+        SaveDices();
+        chosenDices.ClearDices();
+        RollDices();
+    }
+
+    private void RollDices()
+    {
+        if (!rollDices.Roll()) return;
+        savedDices.ResetScore();
+        EndTurn();
     }
 
     private void StartTurn()
     {
         rollDices.FillDices(dicesDeck);
-        reRollCup.OnReRoll.AddListener(RollDices);
         chosenDices.SubscribeOnDiceChosen(dicesDeck);
+        reRollCup.OnReRoll.AddListener(HandleRollDices);
+        endTurnButton.OnTurnEnd.AddListener(EndTurn);
+        RollDices();
     }
-
+    
     private void EndTurn()
     {
-        savedDices.ResetScore();
-        savedDices.ClearDices();
+        SaveDices();
+        ClearDices();
+        savedDices.SaveScore();
         reRollCup.OnReRoll.RemoveAllListeners();
-        chosenDices.ClearDices();
+        endTurnButton.OnTurnEnd.RemoveAllListeners();
+        StartTurn();
+    }
+
+    private void ClearDices()
+    {
+        savedDices.ClearDices();
+        chosenDices.ClearDices();   
+        foreach (var dice in dicesDeck)
+        {
+            dice.onDiceChosen.RemoveAllListeners();
+        }
     }
     
    
