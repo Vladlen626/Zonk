@@ -4,36 +4,39 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class Dice : MonoBehaviour
+public class Dice : NetworkBehaviour
 {
-    [HideInInspector] public UnityEvent<Dice> onDiceChosen;
+    [SyncVar] private uint ownerNetId;
+    
+    public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
+    
+    
+    [SyncVar(hook = nameof(OnDiceSideUpdated))] private int currentSideValue;
+    [SyncVar(hook = nameof(OnChosenUpdated))] private bool isChosen;
+
+    [HideInInspector]
+    public UnityEvent<Dice> onDiceChosen = new UnityEvent<Dice>();
     [SerializeField] private Side[] sides;
+    [SerializeField] private DiceVisualController diceVisualController;
 
     public DiceType type;
-    private DiceVisualController diceVisualController;
-    private BoxCollider boxCollider;
-    private Side currentSide;
-    private bool isChosen;
+
     
-    public Dice(bool isChosen)
+    [Command(requiresAuthority = false)]
+    public void CmdSetOwner(uint newOwnerNetId)
     {
-        this.isChosen = isChosen;
+        ownerNetId = newOwnerNetId;
+        currentSideValue = 1;
+        isChosen = false;
     }
-
-    public void Init()
-    {
-        diceVisualController = GetComponent<DiceVisualController>();
-        boxCollider = GetComponent<BoxCollider>();
-        Hide();
-    }
-
+    
     public void Roll()
     {
-        boxCollider.enabled = true;
-        SetSide(Random.Range(0, sides.Length));
-        diceVisualController.Show();
+        SetSideValue(sides[Random.Range(0, sides.Length)].GetValue());
+        diceVisualController.RandomizeRotation();
     }
 
     public void Hide()
@@ -42,51 +45,53 @@ public class Dice : MonoBehaviour
         GetComponent<Collider>().enabled = false;
     }
 
-    public Side GetCurrentSide()
+    public int GetCurrentSideValue()
     {
-        return currentSide;
-    }
-
-    public void Chosen()
-    {
-        isChosen = true;
-        diceVisualController.ChosenColor();
-    }
-
-    public void UnChosen()
-    {
-        isChosen = false;
-        diceVisualController.DefaultColor();
+        return currentSideValue;
     }
 
     // _____________ Private _____________
 
-
-    private void SetSide(int sideNum)
-    {
-        currentSide = sides[sideNum];
-        diceVisualController.SetSideMesh(currentSide.GetValue());
-    }
-    
-   
     private void OnMouseUp()
     {
-        ChoseDice();
+        if (!IsOwner) return;
+        CmdToggleChoseDice();
     }
+
     private void OnMouseDown()
     {
-        TouchDice();
+        if (!IsOwner) return;
+        CmdTouchDice();
     }
     
-    private void ChoseDice()
+    private void SetSideValue(int sideValue)
     {
-        onDiceChosen?.Invoke(this);
-        diceVisualController.Throw();
+        currentSideValue = sideValue;
+        diceVisualController.SetSideMesh(currentSideValue);
     }
-    private void TouchDice()
+    
+    [Command]
+    private void CmdToggleChoseDice()
     {
-        diceVisualController.Handle();
+        onDiceChosen.Invoke(this);
+        isChosen = !isChosen;
+        diceVisualController.UpdateChosenVisual(isChosen);
+        diceVisualController.RpcThrow();
     }
-    
-    
+
+    [Command]
+    private void CmdTouchDice()
+    {
+        diceVisualController.RpcHandle();
+    }
+
+    private void OnDiceSideUpdated(int oldSideValue, int newSideValue)
+    {
+        diceVisualController.SetSideMesh(newSideValue);
+    }
+
+    private void OnChosenUpdated(bool oldChosenValue, bool newChosenValue)
+    {
+        diceVisualController.UpdateChosenVisual(newChosenValue);
+    }
 }

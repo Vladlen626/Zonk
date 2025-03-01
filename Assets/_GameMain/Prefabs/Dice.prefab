@@ -182,6 +182,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4546340531075941973}
   - component: {fileID: 6742910998227781833}
+  - component: {fileID: 3275905834369180840}
   - component: {fileID: 705382984859784636}
   - component: {fileID: 7097413120173092117}
   - component: {fileID: 6142452730427084504}
@@ -226,6 +227,40 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &3275905834369180840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576330737298761373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a553cb17010b2403e8523b558bffbc14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 1
+  syncInterval: 0
+  target: {fileID: 4546340531075941973}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  coordinateSpace: 1
+  timelineOffset: 1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  bufferResetMultiplier: 3
+  useFixedUpdate: 0
+  positionSensitivity: 0.01
+  rotationSensitivity: 0.01
+  scaleSensitivity: 0.01
 --- !u!114 &705382984859784636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +273,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac5a92a0a3e2a841aeab5092998888a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   onDiceChosen:
     m_PersistentCalls:
       m_Calls: []
@@ -248,6 +286,8 @@ MonoBehaviour:
   - value: 4
   - value: 5
   - value: 6
+  diceVisualController: {fileID: 7097413120173092117}
+  type: 0
 --- !u!114 &7097413120173092117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +300,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e73444bfcbb8aa3468149e6531147d31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   meshes:
   - {fileID: 4275557280307389790}
   - {fileID: 6382887456004432799}
@@ -267,6 +310,7 @@ MonoBehaviour:
   - {fileID: 5726883770133066917}
   - {fileID: 2062990659320476477}
   - {fileID: 6343505287854070955}
+  outline: {fileID: 6142452730427084504}
 --- !u!114 &6142452730427084504
 MonoBehaviour:
   m_ObjectHideFlags: 0

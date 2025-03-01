@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Mirror;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,37 +10,26 @@ public enum DiceType
     Regular
 }
 
-
-public class DiceManager : MonoBehaviour
+public class DiceManager : NetworkBehaviour
 {
-    private static DiceManager instance;
-    public static DiceManager Instance
-    {
-        get
-        {
-            if (instance != null) return instance;
-            instance = FindFirstObjectByType<DiceManager>();
+    public static DiceManager Instance;
 
-            if (instance != null) return instance;
-            GameObject singletonObject = new GameObject("DiceManager");
-            instance = singletonObject.AddComponent<DiceManager>();
-            return instance;
-        }
-    }
-    
     [SerializeField] private GameObject[] dicePrefabs;
     private Dictionary<DiceType, GameObject> dicePrefabsDictionary = new Dictionary<DiceType, GameObject>();
-    
+    private Dictionary<uint, List<Dice>> dicesCollection = new Dictionary<uint, List<Dice>>();
+
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        instance = this;
     }
-    
+
     private void Start()
     {
         foreach (var dicePrefab in dicePrefabs)
@@ -46,13 +37,33 @@ public class DiceManager : MonoBehaviour
             dicePrefabsDictionary.Add(dicePrefab.GetComponent<Dice>().type, dicePrefab);
         }
     }
-
-    public Dice CreateDice(DiceType type)
+    
+    [Server]
+    public void CreatePlayerDices(DiceType[] types, Player player)
     {
-        var dice = Instantiate(dicePrefabsDictionary[type], transform, true);
-        var diceComponent = dice.GetComponent<Dice>();
-        diceComponent.Init();
+        var playerDices = new List<Dice>();
+        foreach (var diceType in types)
+        {
+            var dice = Instantiate(dicePrefabsDictionary[diceType], Vector3.zero, Quaternion.identity);
+            var diceComponent = dice.GetComponent<Dice>();
+            NetworkServer.Spawn(dice);
+            diceComponent.CmdSetOwner(player.netId);
+            dice.GetComponent<NetworkIdentity>().AssignClientAuthority(player.connectionToClient);
+            playerDices.Add(diceComponent);
+        }
+        
+        dicesCollection.Add(player.netId, playerDices);
+    }
 
-        return diceComponent;
+    [Server]
+    public void RemovePlayerDices(uint playerNetId)
+    {
+        dicesCollection.Remove(playerNetId);
+    }
+
+    [Server]
+    public Dice[] GetPlayerDices(uint playerNetId)
+    {
+        return dicesCollection[playerNetId].ToArray();
     }
 }

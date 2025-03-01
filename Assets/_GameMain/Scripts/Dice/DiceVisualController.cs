@@ -1,36 +1,27 @@
 using System;
 using DG.Tweening;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class DiceVisualController : MonoBehaviour
+
+public class DiceVisualController : NetworkBehaviour
 {
     [SerializeField] private MeshRenderer[] meshes;
-    
-    private RectTransform rectTransform;
-    private Outline outline;
-    private MeshRenderer currentMeshRenderer;
+    [SerializeField] private Outline outline;
     
     public void SetSideMesh(int sideValue)
     {
         Hide();
-        currentMeshRenderer = meshes[sideValue - 1];
-        Show();
-        
-        RandomizeRotation();
+        Show(sideValue - 1);
     }
     
-    public void ChosenColor()
+    public void UpdateChosenVisual(bool isChosen)
     {
-        outline.OutlineColor = Color.green;
+        outline.OutlineColor = isChosen ? Color.green : Color.black;
     }
-
-    public void DefaultColor()
-    {
-        outline.OutlineColor = Color.black;
-    }
-
+    
     public void Hide()
     {
         foreach (var meshRenderer in meshes)
@@ -38,30 +29,25 @@ public class DiceVisualController : MonoBehaviour
             meshRenderer.enabled = false;
         }
     }
-
-    public void Show()
+    
+    private void Show(int sideIdx)
     {
-        currentMeshRenderer.enabled = true;
+        meshes[sideIdx].enabled = true;
     }
-
-    public void Handle()
+    
+    [ClientRpc]
+    public void RpcHandle()
     {
         transform.localScale = Vector3.one * 0.9f;
     }
-
-    public void Throw()
+    
+    [ClientRpc]
+    public void RpcThrow()
     {
         transform.localScale = Vector3.one;
     }
-
-    // _____________ Private _____________
     
-    private void Start()
-    {
-        outline = GetComponent<Outline>();
-    }
-    
-    private void RandomizeRotation()
+    public void RandomizeRotation()
     {
         var randomAngle = Random.Range(0f, 360f);
         transform.rotation = Quaternion.Euler(0f, randomAngle, 0f);

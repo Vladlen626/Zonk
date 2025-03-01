@@ -23,17 +23,15 @@ public class SyncChildObjects : NetworkBehaviour
 
     [SyncVar(hook = nameof(OnChildTransformsUpdated))]
     private List<ChildTransformData> childTransformsData;
+
     [SerializeField] private List<Transform> childTransforms;
 
-    void Start()
+    private void Start()
     {
-        if (childTransformsData == null)
-        {
-            childTransformsData = new List<ChildTransformData>();
-        }
+        childTransformsData ??= new List<ChildTransformData>();
     }
 
-    void Update()
+    private void Update()
     {
         if (isLocalPlayer)
         {
@@ -43,7 +41,7 @@ public class SyncChildObjects : NetworkBehaviour
 
     void UpdateChildTransformsData()
     {
-        List<ChildTransformData> newData = new List<ChildTransformData>();
+        var newData = new List<ChildTransformData>();
 
         foreach (var child in childTransforms)
         {
@@ -58,27 +56,27 @@ public class SyncChildObjects : NetworkBehaviour
                 }
             });
         }
-        
+
         CmdUpdateChildTransforms(newData);
     }
 
     [Command]
-    void CmdUpdateChildTransforms(List<ChildTransformData> newData)
+    private void CmdUpdateChildTransforms(List<ChildTransformData> newData)
     {
         childTransformsData = newData;
     }
 
-    void OnChildTransformsUpdated(List<ChildTransformData> oldData, List<ChildTransformData> newData)
+    private void OnChildTransformsUpdated(List<ChildTransformData> oldData, List<ChildTransformData> newData)
     {
+        if (isLocalPlayer) return;
+
         foreach (var data in newData)
         {
-            Transform child = childTransforms.Find(t => t.name == data.childName);
-            if (child != null)
-            {
-                child.localPosition = data.transformData.position;
-                child.localRotation = data.transformData.rotation;
-                child.localScale = data.transformData.scale;
-            }
+            var child = childTransforms.Find(t => t.name == data.childName);
+            if (child == null) continue;
+            child.localPosition = data.transformData.position;
+            child.localRotation = data.transformData.rotation;
+            child.localScale = data.transformData.scale;
         }
     }
 }

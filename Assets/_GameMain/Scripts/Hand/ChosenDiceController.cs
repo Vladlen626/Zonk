@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ChosenDiceController : MonoBehaviour
+public class ChosenDiceController : NetworkBehaviour
 {
     [HideInInspector]
     public UnityEvent onScoreChanged = new UnityEvent();
@@ -19,7 +20,7 @@ public class ChosenDiceController : MonoBehaviour
     {
         foreach (var dice in diceDeck)
         {
-            dice.onDiceChosen.AddListener(HandleNewChosenDice);
+            dice.onDiceChosen.AddListener(HandleChosenDice);
         }
     }
 
@@ -36,12 +37,12 @@ public class ChosenDiceController : MonoBehaviour
 
     // _____________ Private _____________
 
-    private void Start()
+    public void SetScoreController(ScoreController inScoreController)
     {
-        scoreController = GetComponent<ScoreController>();
+        scoreController = inScoreController;
     }
-
-    private void HandleNewChosenDice(Dice newChosenDice)
+    
+    private void HandleChosenDice(Dice newChosenDice)
     {
         if (chosenDices.Contains(newChosenDice))
             RemoveDiceFromChosen(newChosenDice);
@@ -54,13 +55,11 @@ public class ChosenDiceController : MonoBehaviour
     private void AddDiceToChosen(Dice newChosenDice)
     {
         chosenDices.Add(newChosenDice);
-        newChosenDice.Chosen();
     }
 
     private void RemoveDiceFromChosen(Dice newChosenDice)
     {
         chosenDices.Remove(newChosenDice);
-        newChosenDice.UnChosen();
     }
 
     private void UpdateChosenScore()

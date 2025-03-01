@@ -40,9 +40,9 @@ public class SavedDiceController : MonoBehaviour
 
     // _____________ Private _____________
 
-    private void Start()
+    public void SetScoreController(ScoreController inScoreController)
     {
-        scoreController = GetComponent<ScoreController>();
+        scoreController = inScoreController;
     }
 
     private void SaveDice(Dice dice)

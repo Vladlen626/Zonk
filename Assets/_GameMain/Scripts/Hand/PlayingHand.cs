@@ -1,27 +1,48 @@
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 
-public class Hand : MonoBehaviour
+public class PlayingHand : NetworkBehaviour
 {
-    [SerializeField] private DiceType[] diceTypes;
+    [SyncVar(hook = nameof(OnOwnerChanged))]
+    private uint ownerNetId; 
+    public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
+
+    [HideInInspector]
+    public UnityEvent OnTurnEnd;
     [SerializeField] private ReRollCup reRollCup;
     [SerializeField] private EndTurnButton endTurnButton;
     
-    private List<Dice> dicesDeck = new List<Dice>();
     private SavedDiceController savedDices;
     private RollDiceController rollDices;
     private ChosenDiceController chosenDices;
     private ScoreController scoreController;
 
+    [Command(requiresAuthority = false)]
+    public void CmdSetOwner(Player player)
+    {
+        ownerNetId = player.netId;
+        scoreController = player.GetScoreController();
+        savedDices.SetScoreController(scoreController);
+        chosenDices.SetScoreController(scoreController);
+    }
+
+    private void OnOwnerChanged(uint oldOwnerNetId, uint newOwnerNetId)
+    {
+        SetPlayerDices(DiceManager.Instance.GetPlayerDices(newOwnerNetId));
+        reRollCup.CmdSetOwner(newOwnerNetId);
+        endTurnButton.CmdSetOwner(newOwnerNetId);
+    }
+    
     private void Start()
     {
         Init();
         chosenDices.onScoreChanged.AddListener(HandleScoreChanged);
         reRollCup.OnReRoll.AddListener(HandleRollDices);
         endTurnButton.OnTurnEnd.AddListener(EndTurn);
-        StartTurn();
     }
 
     private void Init()
@@ -29,12 +50,6 @@ public class Hand : MonoBehaviour
         savedDices = GetComponent<SavedDiceController>();
         rollDices = GetComponent<RollDiceController>();
         chosenDices = GetComponent<ChosenDiceController>();
-        scoreController = GetComponent<ScoreController>();
-        
-        foreach (var diceType in diceTypes)
-        {
-            dicesDeck.Add(DiceManager.Instance.CreateDice(diceType));
-        }
     }
 
     private void SaveDices()
@@ -44,6 +59,7 @@ public class Hand : MonoBehaviour
         rollDices.RemoveDices(chosenDices.GetDices());
     }
     
+    [Command(requiresAuthority = false)]
     private void HandleRollDices()
     {
         SaveDices();
@@ -51,18 +67,19 @@ public class Hand : MonoBehaviour
         DisableButtons();
         RollDices();
     }
-
+    
     private void RollDices()
     {
-        if (!rollDices.Roll()) return;
+        rollDices.Roll();
+        if (rollDices.IsRollSuccessful()) return;
         savedDices.ResetScore();
         EndTurn();
     }
     
-    private void StartTurn()
+    private void SetPlayerDices(Dice[] playerDices)
     {
-        rollDices.FillDices(dicesDeck.ToArray());
-        chosenDices.SubscribeOnDiceChosen(dicesDeck.ToArray());
+        rollDices.FillDices(playerDices);
+        chosenDices.SubscribeOnDiceChosen(playerDices);
         EnableButtons();
     }
     
@@ -72,7 +89,7 @@ public class Hand : MonoBehaviour
         ClearAllDices();
         DisableButtons();
         savedDices.SaveScore();
-        StartTurn();
+        OnTurnEnd.Invoke();
     }
 
     private void HandleScoreChanged()
@@ -98,12 +115,7 @@ public class Hand : MonoBehaviour
     private void ClearAllDices()
     {
         savedDices.ClearDices();
-        chosenDices.ClearDices();   
-        foreach (var dice in dicesDeck)
-        {
-            dice.onDiceChosen.RemoveAllListeners();
-            dice.Hide();
-        }
+        chosenDices.ClearDices();
     }
     
    

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using UnityEngine;
 
-public class Combinator : MonoBehaviour
+public class Combinator : NetworkBehaviour
 {
     private static Combinator instance;
     public static Combinator Instance
@@ -49,6 +50,7 @@ public class Combinator : MonoBehaviour
 
     private List<Dice>[] diceContainers = new List<Dice>[6];
     
+    [Server]
     public int GetScore(Dice[] dices, bool ignoreMistakes = false)
     {
         var score = 0;
@@ -64,7 +66,7 @@ public class Combinator : MonoBehaviour
         return diceContainers.Any(diceContainer => diceContainer.Count > 0) ? 0 : score;
     }
     
-
+    [Server]
     private int GetCombinationScore()
     {
         foreach (var combo in combos)
@@ -90,6 +92,7 @@ public class Combinator : MonoBehaviour
         return 0;
     }
 
+    [Server]
     private int GetIdenticalDiceScore()
     {
         var score = 0;
@@ -105,6 +108,7 @@ public class Combinator : MonoBehaviour
         return score;
     }
 
+    [Server]
     private int GetBasicScore(int containerNum)
     {
         var score = 0;
@@ -118,15 +122,17 @@ public class Combinator : MonoBehaviour
         return score;
     }
 
+    [Server]
     private void FillContainers(Dice[] dices)
     {
         ClearContainers();
         foreach (var dice in dices)
         {
-            diceContainers[dice.GetCurrentSide().GetValue() - 1].Add(dice);
+            diceContainers[dice.GetCurrentSideValue() - 1].Add(dice);
         }
     }
 
+    [Server]
     private void ClearContainers()
     {
         foreach (var diceContainer in diceContainers)

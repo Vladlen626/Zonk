@@ -1,12 +1,13 @@
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class RollDiceController : MonoBehaviour
+public class RollDiceController : NetworkBehaviour
 {
     [SerializeField] private Transform[] rollingPoses;
     private List<Dice> rollDices = new List<Dice>();
-
-    public bool Roll()
+    
+    public void Roll()
     {
         for (var diceNum = 0; diceNum < rollDices.Count; diceNum++)
         {
@@ -14,10 +15,13 @@ public class RollDiceController : MonoBehaviour
             dice.transform.position = rollingPoses[diceNum].position;
             dice.Roll();
         }
-
-        return Combinator.Instance.GetScore(rollDices.ToArray(), true) <= 0;
     }
 
+    public bool IsRollSuccessful()
+    {
+        return Combinator.Instance.GetScore(rollDices.ToArray(), true) > 0;
+    }
+    
     public void FillDices(Dice[] dicesDeck)
     {
         rollDices.Clear();
