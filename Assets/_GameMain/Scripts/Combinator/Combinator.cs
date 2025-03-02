@@ -30,6 +30,7 @@ public class Combinator : NetworkBehaviour
         instance = this;
     }
     
+    
     private void Start()
     {
         for (var i = 0; i < diceContainers.Length; i++)
@@ -79,7 +80,6 @@ public class Combinator : NetworkBehaviour
                     isCombo = false;
             }
             
-
             if (!isCombo) continue;
             foreach (var neededValue in combo.GetNeededValues())
             {

@@ -33,8 +33,18 @@ public class SavedDiceController : MonoBehaviour
         ResetScore();
     }
 
+    public Dice[] GetSavedDices()
+    {
+        return savedDices.ToArray();
+    }
+
     public void ClearDices()
     {
+        foreach (var savedDice in savedDices)
+        {
+            savedDice.UnSave();
+        }
+
         savedDices.Clear();
     }
 
@@ -49,5 +59,7 @@ public class SavedDiceController : MonoBehaviour
     {
         savedDices.Add(dice);
         dice.transform.position = dicePoses[savedDices.Count - 1].position;
+        dice.UnChose();
+        dice.Save();
     }
 }

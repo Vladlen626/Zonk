@@ -2,42 +2,6 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class EndTurnButton : NetworkBehaviour
+public class EndTurnButton : ButtonNetworkObject
 {
-    [SyncVar] private uint ownerNetId;
-
-    private bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
-    
-    [HideInInspector]
-    public UnityEvent OnTurnEnd = new UnityEvent();
-    
-    [Command(requiresAuthority = false)]
-    public void CmdSetOwner(uint newOwnerNetId)
-    {
-        ownerNetId = newOwnerNetId;
-    }
-    
-    public void Enable()
-    {
-        transform.localScale = Vector3.one;
-    }
-
-    public void Disable()
-    {
-        transform.localScale = Vector3.zero;
-    }
-    
-    
-    private void OnMouseDown()
-    {
-        if(!IsOwner) return;
-        transform.localScale = Vector3.one * 0.9f;
-    }
-
-    private void OnMouseUp()
-    {
-        if(!IsOwner) return;
-        OnTurnEnd.Invoke();
-        transform.localScale = Vector3.one * 1f;
-    }
 }

@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7761568849428164864}
   - component: {fileID: 4768033471919668152}
-  - component: {fileID: 7247512297608516778}
+  - component: {fileID: 5389951125032265820}
   m_Layer: 0
   m_Name: EndTurn
   m_TagString: Untagged
@@ -178,7 +178,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.075
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7247512297608516778
+--- !u!114 &5389951125032265820
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,10 +187,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 979212129024859319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe302a901fab75d4d88e8b496682460d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cac2e929f6d6994393325c7cc37e38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnTurnEnd:
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  OnButtonPressed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1888177559719246820
@@ -335,8 +338,11 @@ MonoBehaviour:
   OnTurnEnd:
     m_PersistentCalls:
       m_Calls: []
-  reRollCup: {fileID: 9073352375985579504}
-  endTurnButton: {fileID: 7247512297608516778}
+  reRollButton: {fileID: 784502863954474093}
+  endTurnButton: {fileID: 5389951125032265820}
+  savedDices: {fileID: 5098063390639391605}
+  rollDices: {fileID: 7877476263073718234}
+  chosenDices: {fileID: 1322887487237882108}
 --- !u!114 &1322887487237882108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,6 +355,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2e12d433974d5c499a69f25b6b048c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   onScoreChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1077,7 +1086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7046646960311104720}
   - component: {fileID: 5223876445982762736}
-  - component: {fileID: 9073352375985579504}
+  - component: {fileID: 784502863954474093}
   m_Layer: 0
   m_Name: ReRollCup
   m_TagString: Untagged
@@ -1122,7 +1131,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.075
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &9073352375985579504
+--- !u!114 &784502863954474093
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1131,10 +1140,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 6984745935569804006}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6887d707c08b5f44f90a046ebfe9de89, type: 3}
+  m_Script: {fileID: 11500000, guid: 1cac2e929f6d6994393325c7cc37e38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnReRoll:
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  OnButtonPressed:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &7063875314878917101

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,9 +10,12 @@ public class GameManager : NetworkBehaviour
     public static GameManager Instance;
     [HideInInspector]
     public UnityEvent OnPlayerConnected = new UnityEvent();
-    
+
+    [SerializeField] private int scoreGoal;
     [SerializeField] private Transform[] handPositions;
     [SerializeField] private PlayingHand playingHand;
+    [SerializeField] private TextMeshPro scoreGoalTmp;
+    
     private List<Player> players = new List<Player>();
     
     private int currentPlayerIndex = 0;
@@ -26,6 +30,8 @@ public class GameManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+
+        scoreGoalTmp.text = "Goal: " + scoreGoal;
         playingHand.OnTurnEnd.AddListener(EndTurn);
     }
     
@@ -39,9 +45,12 @@ public class GameManager : NetworkBehaviour
         if (players.Count == 1)
         {
             currentPlayerIndex = 0;
+            UpdatePlayingHandOwner();
+        } else if (players.Count == 2)
+        {
+            MovePlayingHand(currentPlayerIndex);
         }
         OnPlayerConnected.Invoke();
-        UpdatePlayingHandOwner();
     }
 
     [Server]
@@ -57,16 +66,55 @@ public class GameManager : NetworkBehaviour
     private void EndTurn()
     {
         if (players.Count < 2) return;
-        players[currentPlayerIndex].TurnEnd();
+        CleanUpPlayerDices(GetCurrentPlayer().netId);
+        if (CheckFinishGameCondition()) return;
+        NextTurn();
+    }
+
+    [Server]
+    private void NextTurn()
+    {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
         UpdatePlayingHandOwner();
+        MovePlayingHand(currentPlayerIndex);
+    }
+
+    [Server]
+    private bool CheckFinishGameCondition()
+    {
+        if (GetCurrentPlayer().GetScoreController().GeneralScore < scoreGoal) return false;
+        AnnouncePlayerWin();
+        return true;
+    }
+
+    [Server]
+    private void AnnouncePlayerWin()
+    {
+        scoreGoalTmp.text = "Game finish, player " + currentPlayerIndex + " win";
+        playingHand.transform.localScale = Vector3.zero;
+    }
+
+    [Server]
+    private Player GetCurrentPlayer()
+    {
+        return players[currentPlayerIndex];
     }
 
     [Server]
     private void UpdatePlayingHandOwner()
     {
         playingHand.CmdSetOwner(players[currentPlayerIndex]);
-        MovePlayingHand(currentPlayerIndex);
+    }
+
+    [Server]
+    private void CleanUpPlayerDices(uint playerNetId)
+    {
+        foreach (var playerDice in DiceManager.Instance.GetPlayerDices(playerNetId))
+        {
+            playerDice.Hide();
+            playerDice.onDiceChosen.RemoveAllListeners();
+            playerDice.onDiceUnChosen.RemoveAllListeners();
+        }
     }
     
     [ClientRpc]

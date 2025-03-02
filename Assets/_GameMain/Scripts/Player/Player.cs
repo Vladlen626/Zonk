@@ -6,7 +6,6 @@ using UnityEngine;
 public class Player : NetworkBehaviour
 {
     public DiceType[] diceTypes;
-    private List<Dice> dicesDeck = new List<Dice>();
     
     private ScoreController scoreController;
     
@@ -27,24 +26,9 @@ public class Player : NetworkBehaviour
         GameManager.Instance.RemovePlayer(this);
     }
 
-    public Dice[] GetDicesDeck()
-    {
-        return dicesDeck.ToArray();
-    }
-
     public ScoreController GetScoreController()
     {
         return scoreController;
-    }
-
-    [Command]
-    public void TurnEnd()
-    {
-        foreach (var dice in dicesDeck)
-        {
-            dice.onDiceChosen.RemoveAllListeners();
-            dice.Hide();
-        }
     }
     
 }

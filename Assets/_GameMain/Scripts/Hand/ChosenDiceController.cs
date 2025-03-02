@@ -20,21 +20,11 @@ public class ChosenDiceController : NetworkBehaviour
     {
         foreach (var dice in diceDeck)
         {
-            dice.onDiceChosen.AddListener(HandleChosenDice);
+            dice.onDiceChosen.AddListener(AddDiceToChosen);
+            dice.onDiceUnChosen.AddListener(RemoveDiceFromChosen);
         }
     }
-
-    public void ClearDices()
-    {
-        var chosenDicesForClear = chosenDices.ToArray();
-        foreach (var dice in chosenDicesForClear)
-        {
-            RemoveDiceFromChosen(dice);
-        }
-
-        UpdateChosenScore();
-    }
-
+    
     // _____________ Private _____________
 
     public void SetScoreController(ScoreController inScoreController)
@@ -42,24 +32,16 @@ public class ChosenDiceController : NetworkBehaviour
         scoreController = inScoreController;
     }
     
-    private void HandleChosenDice(Dice newChosenDice)
-    {
-        if (chosenDices.Contains(newChosenDice))
-            RemoveDiceFromChosen(newChosenDice);
-        else
-            AddDiceToChosen(newChosenDice);
-        
-        UpdateChosenScore();
-    }
-    
     private void AddDiceToChosen(Dice newChosenDice)
     {
         chosenDices.Add(newChosenDice);
+        UpdateChosenScore();
     }
 
     private void RemoveDiceFromChosen(Dice newChosenDice)
     {
         chosenDices.Remove(newChosenDice);
+        UpdateChosenScore();
     }
 
     private void UpdateChosenScore()

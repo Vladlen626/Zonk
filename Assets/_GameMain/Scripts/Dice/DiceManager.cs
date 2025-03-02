@@ -44,7 +44,7 @@ public class DiceManager : NetworkBehaviour
         var playerDices = new List<Dice>();
         foreach (var diceType in types)
         {
-            var dice = Instantiate(dicePrefabsDictionary[diceType], Vector3.zero, Quaternion.identity);
+            var dice = Instantiate(dicePrefabsDictionary[diceType], Vector3.one * 1000, Quaternion.identity);
             var diceComponent = dice.GetComponent<Dice>();
             NetworkServer.Spawn(dice);
             diceComponent.CmdSetOwner(player.netId);

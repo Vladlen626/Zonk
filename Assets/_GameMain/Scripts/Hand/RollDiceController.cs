@@ -17,6 +17,11 @@ public class RollDiceController : NetworkBehaviour
         }
     }
 
+    public bool IsEmpty()
+    {
+        return rollDices.Count == 0;
+    }
+
     public bool IsRollSuccessful()
     {
         return Combinator.Instance.GetScore(rollDices.ToArray(), true) > 0;
