@@ -39,6 +39,7 @@ public class GameManager : NetworkBehaviour
     public void AddPlayer(Player player)
     {
         if (players.Contains(player)) return;
+        player.SetName(players.Count);
         players.Add(player);
         DiceManager.Instance.CreatePlayerDices(player.diceTypes, player);
 
@@ -83,12 +84,12 @@ public class GameManager : NetworkBehaviour
     private bool CheckFinishGameCondition()
     {
         if (GetCurrentPlayer().GetScoreController().GeneralScore < scoreGoal) return false;
-        AnnouncePlayerWin();
+        RpcAnnouncePlayerWin();
         return true;
     }
 
-    [Server]
-    private void AnnouncePlayerWin()
+    [ClientRpc]
+    private void RpcAnnouncePlayerWin()
     {
         scoreGoalTmp.text = "Game finish, player " + currentPlayerIndex + " win";
         playingHand.transform.localScale = Vector3.zero;
@@ -124,5 +125,6 @@ public class GameManager : NetworkBehaviour
         playingHand.transform.localPosition = Vector3.zero;
         playingHand.transform.localRotation = Quaternion.identity;
     }
+    
     
 }

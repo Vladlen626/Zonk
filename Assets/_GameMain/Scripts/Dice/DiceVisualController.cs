@@ -33,18 +33,6 @@ public class DiceVisualController : NetworkBehaviour
         meshes[sideIdx].enabled = true;
     }
 
-    [ClientRpc]
-    public void RpcHandle()
-    {
-        transform.localScale = Vector3.one * 0.9f;
-    }
-
-    [ClientRpc]
-    public void RpcThrow()
-    {
-        transform.localScale = Vector3.one;
-    }
-
     public void RandomizeRotation()
     {
         var randomAngle = Random.Range(0f, 360f);

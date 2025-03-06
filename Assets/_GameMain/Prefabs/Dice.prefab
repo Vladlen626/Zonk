@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 705382984859784636}
   - component: {fileID: 7097413120173092117}
   - component: {fileID: 6142452730427084504}
+  - component: {fileID: 2406803671645143194}
   - component: {fileID: 942724093589517340}
   m_Layer: 0
   m_Name: Dice
@@ -279,6 +280,9 @@ MonoBehaviour:
   onDiceChosen:
     m_PersistentCalls:
       m_Calls: []
+  onDiceUnChosen:
+    m_PersistentCalls:
+      m_Calls: []
   sides:
   - value: 1
   - value: 2
@@ -287,6 +291,7 @@ MonoBehaviour:
   - value: 5
   - value: 6
   diceVisualController: {fileID: 7097413120173092117}
+  interactable: {fileID: 2406803671645143194}
   type: 0
 --- !u!114 &7097413120173092117
 MonoBehaviour:
@@ -324,11 +329,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMode: 0
-  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  outlineColor: {r: 0, g: 0, b: 0, a: 0.39215687}
   outlineWidth: 5
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &2406803671645143194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576330737298761373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7208f860bba16424eb5d2a8d8fee8654, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  scaleSpeed: 0.05
 --- !u!65 &942724093589517340
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -348,7 +369,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.1, y: 0.1, z: 0.1}
+  m_Size: {x: 0.075, y: 0.075, z: 0.075}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5495778807645471917
 GameObject:

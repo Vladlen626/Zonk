@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Mirror;
+using TMPro;
 using UnityEngine;
 
 public class Player : NetworkBehaviour
@@ -8,6 +9,8 @@ public class Player : NetworkBehaviour
     public DiceType[] diceTypes;
     
     private ScoreController scoreController;
+
+    [SerializeField] private TextMeshPro nameTmp;
     
     // ReSharper disable Unity.PerformanceAnalysis
     public override void OnStartServer()
@@ -29,6 +32,11 @@ public class Player : NetworkBehaviour
     public ScoreController GetScoreController()
     {
         return scoreController;
+    }
+
+    public void SetName(int playerIdx)
+    {
+        nameTmp.text = "Player: " + playerIdx;
     }
     
 }

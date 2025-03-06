@@ -21,13 +21,15 @@ public class Dice : NetworkBehaviour
     [HideInInspector] public UnityEvent<Dice> onDiceUnChosen = new UnityEvent<Dice>();
     [SerializeField] private Side[] sides;
     [SerializeField] private DiceVisualController diceVisualController;
-
+    [SerializeField] private InteractableObject interactable;
+    
     public DiceType type;
     
     [Command(requiresAuthority = false)]
     public void CmdSetOwner(uint newOwnerNetId)
     {
         ownerNetId = newOwnerNetId;
+        interactable.CmdSetOwner(ownerNetId);
         Hide();
     }
 
@@ -82,13 +84,7 @@ public class Dice : NetworkBehaviour
         if (!IsOwner || isSaved) return;
         CmdToggleChoseDice();
     }
-
-    private void OnMouseDown()
-    {
-        if (!IsOwner || isSaved) return;
-        CmdTouchDice();
-    }
-
+    
     private void SetSideValue(int sideValue)
     {
         currentSideValue = sideValue;
@@ -106,16 +102,8 @@ public class Dice : NetworkBehaviour
         {
             Chose();
         }
-
-        diceVisualController.RpcThrow();
     }
-
-    [Command]
-    private void CmdTouchDice()
-    {
-        diceVisualController.RpcHandle();
-    }
-
+    
     private void OnDiceSideUpdated(int oldSideValue, int newSideValue)
     {
         diceVisualController.SetSideMesh(newSideValue);
