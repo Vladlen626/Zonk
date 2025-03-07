@@ -10,14 +10,18 @@ public class PlayingHand : NetworkBehaviour
 {
     [SyncVar] private uint ownerNetId;
     public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
-
+    
     [HideInInspector] public UnityEvent OnTurnEnd;
-    [SerializeField] private ButtonNetworkObject reRollButton;
-    [SerializeField] private ButtonNetworkObject endTurnButton;
+    
+    [Header("DiceControllers")]
     [SerializeField] private SavedDiceController savedDices;
     [SerializeField] private RollDiceController rollDices;
     [SerializeField] private ChosenDiceController chosenDices;
-
+    
+    [Header("Buttons")]
+    [SerializeField] private ButtonNetworkObject reRollButton;
+    [SerializeField] private ButtonNetworkObject endTurnButton;
+    
     private ScoreController scoreController;
 
     [Command(requiresAuthority = false)]
@@ -36,7 +40,7 @@ public class PlayingHand : NetworkBehaviour
     {
         chosenDices.onScoreChanged.AddListener(HandleScoreChanged);
         reRollButton.OnButtonPressed.AddListener(HandleRollDices);
-        endTurnButton.OnButtonPressed.AddListener(EndTurn);
+        endTurnButton.OnButtonPressed.AddListener(HandleEndTurn);
     }
     
     private void SaveDices()
@@ -67,10 +71,7 @@ public class PlayingHand : NetworkBehaviour
         if (rollDices.IsRollSuccessful()) yield break;
         yield return new WaitForSeconds(0.3f);
         savedDices.ResetScore();
-        SaveDices();
-        savedDices.ClearDices();
-        yield return new WaitForSeconds(1f);
-        EndTurn();
+        HandleEndTurn();
     }
 
     private void SetPlayerDices(Dice[] playerDices)
@@ -80,10 +81,18 @@ public class PlayingHand : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    private void EndTurn()
+    private void HandleEndTurn()
     {
-        UnChoseAllDices();
+        StartCoroutine(nameof(EndTurn));
+    }
+
+    private IEnumerator EndTurn()
+    {
+        SaveDices();
+        savedDices.ClearDices();
         savedDices.SaveScore();
+        UnChoseAllDices();
+        yield return new WaitForSeconds(2);
         OnTurnEnd.Invoke();
     }
 

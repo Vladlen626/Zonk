@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using UnityEngine;
 
@@ -11,10 +12,22 @@ public class PlayerCameraController : NetworkBehaviour
     private float yRotation = 0f;
     private void Start()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
         playerCamera.enabled = isLocalPlayer;
         playerCamera.GetComponent<AudioListener>().enabled = isLocalPlayer;
+    }
+
+    private void OnEnable()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        xRotation = -40f;
+        yRotation = 0f;
+    }
+
+    private void OnDisable()
+    {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void Update()
@@ -25,8 +38,8 @@ public class PlayerCameraController : NetworkBehaviour
         
         xRotation -= mouseY;
         yRotation += mouseX;
-        xRotation = Mathf.Clamp(xRotation, rotationClamp.x * 2, rotationClamp.y * 2);
-        yRotation = Mathf.Clamp(yRotation, rotationClamp.x, rotationClamp.y);
+        xRotation = Mathf.Clamp(xRotation, rotationClamp.x, rotationClamp.y);
+        yRotation = Mathf.Clamp(yRotation, rotationClamp.x + 15f, rotationClamp.y + 15f);
         
         transform.localRotation =  Quaternion.Euler(xRotation, yRotation, 0f);
     }

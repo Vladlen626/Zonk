@@ -123,9 +123,9 @@ public class GameManager : NetworkBehaviour
     private void MovePlayingHand(int positionNum)
     {
         playingHand.transform.parent = handPositions[positionNum];
-        DOTween.Sequence()
-            .Append(playingHand.transform.DORotateQuaternion(Quaternion.identity, 0.1f).SetEase(Ease.InOutQuad))
-            .Join(playingHand.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.InOutQuad));
+        playingHand.transform.localPosition = Vector3.zero;
+        playingHand.transform.localRotation = Quaternion.identity;
+
     }
     
     
