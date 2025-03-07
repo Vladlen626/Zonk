@@ -1,3 +1,5 @@
+using System;
+using DG.Tweening;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,7 +24,6 @@ public class Dice : NetworkBehaviour
     [SerializeField] private Side[] sides;
     [SerializeField] private DiceVisualController diceVisualController;
     [SerializeField] private InteractableObject interactable;
-    
     public DiceType type;
     
     [Command(requiresAuthority = false)]
@@ -36,7 +37,7 @@ public class Dice : NetworkBehaviour
     public void Roll()
     {
         SetSideValue(sides[Random.Range(0, sides.Length)].GetValue());
-        diceVisualController.RandomizeRotation();
+        diceVisualController.PlayRollAnimation();
     }
     
     public void Hide()
@@ -67,9 +68,10 @@ public class Dice : NetworkBehaviour
         onDiceUnChosen.Invoke(this);
     }
 
-    public void Save()
+    public void Save(Vector3 savePosition)
     {
         isSaved = true;
+        diceVisualController.MoveToSavePosition(savePosition);
     }
 
     public void UnSave()

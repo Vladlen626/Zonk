@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -44,25 +45,31 @@ public class PlayingHand : NetworkBehaviour
         rollDices.RemoveDices(chosenDices.GetDices());
         savedDices.SaveDices(chosenDices.GetDices());
     }
-
+    
     [Command(requiresAuthority = false)]
     private void HandleRollDices()
     {
-        SaveDices();
-        UnChoseAllDices();
-        DisableButtons();
-        RollDices();
+        StartCoroutine(nameof(RollDices));
     }
 
-    private void RollDices()
+    private IEnumerator RollDices()
     {
+        SaveDices();
+        yield return new WaitForSeconds(0.3f);
+        DisableButtons();
+        
         if (rollDices.IsEmpty())
         {
+            yield return new WaitForSeconds(0.3f);
             RestoreRollDices();
         }
         rollDices.Roll();
-        if (rollDices.IsRollSuccessful()) return;
+        if (rollDices.IsRollSuccessful()) yield break;
+        yield return new WaitForSeconds(0.3f);
         savedDices.ResetScore();
+        SaveDices();
+        savedDices.ClearDices();
+        yield return new WaitForSeconds(1f);
         EndTurn();
     }
 
@@ -70,16 +77,12 @@ public class PlayingHand : NetworkBehaviour
     {
         rollDices.FillDices(playerDices);
         chosenDices.SubscribeOnDiceChosen(playerDices);
-        EnableButtons();
     }
 
     [Command(requiresAuthority = false)]
     private void EndTurn()
     {
-        SaveDices();
-        savedDices.ClearDices();
         UnChoseAllDices();
-        DisableButtons();
         savedDices.SaveScore();
         OnTurnEnd.Invoke();
     }

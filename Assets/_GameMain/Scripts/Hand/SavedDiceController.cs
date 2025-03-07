@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SavedDiceController : MonoBehaviour
 {
@@ -58,8 +60,7 @@ public class SavedDiceController : MonoBehaviour
     private void SaveDice(Dice dice)
     {
         savedDices.Add(dice);
-        dice.transform.position = dicePoses[savedDices.Count - 1].position;
         dice.UnChose();
-        dice.Save();
+        dice.Save(dicePoses[savedDices.Count - 1].position);
     }
 }

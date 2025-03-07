@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -32,10 +33,22 @@ public class DiceVisualController : NetworkBehaviour
     {
         meshes[sideIdx].enabled = true;
     }
-
-    public void RandomizeRotation()
+    
+    public void PlayRollAnimation()
     {
-        var randomAngle = Random.Range(0f, 360f);
-        transform.rotation = Quaternion.Euler(0f, randomAngle, 0f);
+        DOTween.Sequence()
+            .Append(transform.DOMove(transform.position + Vector3.up * 0.2f, 0.125f))
+            .Join(transform.DORotate(Vector3.one * 180, 0.125f))
+            .Append(transform.DORotate(Vector3.one * Random.Range(360, 720), 0.150f))
+            .Append(transform.DOMove(transform.position, 0.100f))
+            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), 0.100f));
+    }
+
+    public void MoveToSavePosition(Vector3 savePosition)
+    {
+        DOTween.Sequence()
+            .Append(transform.DOJump(savePosition, 0.2f, 2, 0.5f))
+            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), 0.5f));
+
     }
 }

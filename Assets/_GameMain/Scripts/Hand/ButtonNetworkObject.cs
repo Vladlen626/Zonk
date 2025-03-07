@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -11,6 +12,7 @@ public class ButtonNetworkObject : NetworkBehaviour
 
     private bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
 
+    [SerializeField] private Animator animator;
     [HideInInspector] public UnityEvent OnButtonPressed = new UnityEvent();
 
     public void CmdSetOwner(uint newOwnerNetId)
@@ -37,28 +39,55 @@ public class ButtonNetworkObject : NetworkBehaviour
     {
         OnButtonPressed.Invoke();
     }
-
+    
     private void OnMouseDown()
     {
         if (!IsOwner) return;
-        transform.localScale = Vector3.one * 0.9f;
+        Pressed();
     }
-
+    
     private void OnMouseUp()
     {
         if (!IsOwner) return;
-        CallButtonPressed();
-        transform.localScale = Vector3.one * 1f;
+        Released();
     }
+
+
+    [Command(requiresAuthority = false)]
+    private void Pressed()
+    {
+        CallButtonPressed();
+        RpcPressed();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void Released()
+    {
+        RpcReleased();
+    }
+    
+    
+    [ClientRpc]
+    private void RpcPressed()
+    {
+        animator.Play("ButtonPressed", -1, 0f);
+    }
+
+    [ClientRpc]
+    private void RpcReleased()
+    {
+        
+    }
+    
 
     private void Hide()
     {
-        transform.localScale = Vector3.zero;
+        //transform.DOScale(Vector3.zero, 0.25f);
     }
 
     private void Show()
     {
-        transform.localScale = Vector3.one;
+        //transform.DOScale(Vector3.one, 0.25f);
     }
 
     private void OnVisibilityChange(bool oldValue, bool newValue)
