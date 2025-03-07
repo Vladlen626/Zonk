@@ -39,7 +39,7 @@ public class PlayerCameraController : NetworkBehaviour
         xRotation -= mouseY;
         yRotation += mouseX;
         xRotation = Mathf.Clamp(xRotation, rotationClamp.x, rotationClamp.y);
-        yRotation = Mathf.Clamp(yRotation, rotationClamp.x + 15f, rotationClamp.y + 15f);
+        yRotation = Mathf.Clamp(yRotation, rotationClamp.x - 15f, rotationClamp.y + 15f);
         
         transform.localRotation =  Quaternion.Euler(xRotation, yRotation, 0f);
     }
