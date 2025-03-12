@@ -12,23 +12,10 @@ public enum DiceType
 
 public class DiceManager : NetworkBehaviour
 {
-    public static DiceManager Instance;
 
     [SerializeField] private GameObject[] dicePrefabs;
     private Dictionary<DiceType, GameObject> dicePrefabsDictionary = new Dictionary<DiceType, GameObject>();
     private Dictionary<uint, List<Dice>> dicesCollection = new Dictionary<uint, List<Dice>>();
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private void Start()
     {

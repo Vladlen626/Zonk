@@ -42,13 +42,13 @@ public class ButtonNetworkObject : NetworkBehaviour
     
     private void OnMouseDown()
     {
-        if (!IsOwner && isVisible) return;
+        if (!IsOwner || !isVisible) return;
         Pressed();
     }
     
     private void OnMouseUp()
     {
-        if (!IsOwner && isVisible) return;
+        if (!IsOwner || !isVisible) return;
         Released();
     }
 

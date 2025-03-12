@@ -10,7 +10,7 @@ public class SavedDiceController : MonoBehaviour
     [SerializeField] private Transform[] dicePoses;
 
     private List<Dice> savedDices = new List<Dice>();
-    private ScoreController scoreController;
+    private HandScoreController _handScoreController;
 
     public void SaveDices(Dice[] chosenDices)
     {
@@ -21,17 +21,17 @@ public class SavedDiceController : MonoBehaviour
             SaveDice(newSavedDice);
         }
 
-        scoreController.SavedScore += Combinator.Instance.GetScore(newSavedDices.ToArray());
+        _handScoreController.SavedScore += Combinator.Instance.GetScore(newSavedDices.ToArray());
     }
 
     public void ResetScore()
     {
-        scoreController.SavedScore = 0;
+        _handScoreController.SavedScore = 0;
     }
 
     public void SaveScore()
     {
-        scoreController.GeneralScore += scoreController.SavedScore;
+        _handScoreController.GeneralScore += _handScoreController.SavedScore;
         ResetScore();
     }
 
@@ -52,9 +52,9 @@ public class SavedDiceController : MonoBehaviour
 
     // _____________ Private _____________
 
-    public void SetScoreController(ScoreController inScoreController)
+    public void SetScoreController(HandScoreController inHandScoreController)
     {
-        scoreController = inScoreController;
+        _handScoreController = inHandScoreController;
     }
 
     private void SaveDice(Dice dice)

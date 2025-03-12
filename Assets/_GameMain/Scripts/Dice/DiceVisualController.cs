@@ -18,7 +18,7 @@ public class DiceVisualController : NetworkBehaviour
 
     public void UpdateChosenVisual(bool isChosen)
     {
-        outline.OutlineColor = isChosen ? Color.green : Color.black;
+        outline.OutlineColor = isChosen ? Color.red : Color.black;
     }
 
     private void Hide()

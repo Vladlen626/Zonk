@@ -9,7 +9,7 @@ public class ChosenDiceController : NetworkBehaviour
     public UnityEvent onScoreChanged = new UnityEvent();
     
     private List<Dice> chosenDices = new List<Dice>();
-    private ScoreController scoreController;
+    private HandScoreController _handScoreController;
 
     public Dice[] GetDices()
     {
@@ -27,9 +27,9 @@ public class ChosenDiceController : NetworkBehaviour
     
     // _____________ Private _____________
 
-    public void SetScoreController(ScoreController inScoreController)
+    public void SetScoreController(HandScoreController inHandScoreController)
     {
-        scoreController = inScoreController;
+        _handScoreController = inHandScoreController;
     }
     
     private void AddDiceToChosen(Dice newChosenDice)
@@ -46,7 +46,7 @@ public class ChosenDiceController : NetworkBehaviour
 
     private void UpdateChosenScore()
     {
-        scoreController.ChosenScore = chosenDices.Count > 0 ? Combinator.Instance.GetScore(chosenDices.ToArray()) : 0;
+        _handScoreController.ChosenScore = chosenDices.Count > 0 ? Combinator.Instance.GetScore(chosenDices.ToArray()) : 0;
         onScoreChanged.Invoke();
     }
 }

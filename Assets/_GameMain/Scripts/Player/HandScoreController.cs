@@ -1,13 +1,15 @@
+using DG.Tweening;
 using Mirror;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class ScoreController : NetworkBehaviour
+
+public class HandScoreController : NetworkBehaviour
 { 
     [SerializeField] private TextMeshPro chosenScoreTMP;
     [SerializeField] private TextMeshPro savedScoreTMP;
     [SerializeField] private TextMeshPro generalScoreTMP;
+    [SerializeField] private TextMeshPro playerNameTmp;
     
     [SyncVar(hook = nameof(OnChosenScoreChange))]
     private int chosenScore;
@@ -21,8 +23,8 @@ public class ScoreController : NetworkBehaviour
         get => chosenScore;
         set
         {
+            UpdateUiScoreText(chosenScoreTMP, chosenScore, value);
             chosenScore = value;
-            UpdateUiScoreText(chosenScoreTMP, chosenScore);
         }
     }
     public int SavedScore
@@ -30,8 +32,8 @@ public class ScoreController : NetworkBehaviour
         get => savedScore;
         set
         {
+            UpdateUiScoreText(savedScoreTMP, savedScore, value);
             savedScore = value;
-            UpdateUiScoreText(savedScoreTMP, savedScore);
         }
     }
     public int GeneralScore
@@ -39,29 +41,45 @@ public class ScoreController : NetworkBehaviour
         get => generalScore;
         set
         {
+            UpdateUiScoreText(generalScoreTMP, generalScore, value);
             generalScore = value;
-            UpdateUiScoreText(generalScoreTMP, generalScore);
         }
     }
 
-    private void UpdateUiScoreText(TextMeshPro scoreTmp, int score)
+    public void ResetScore()
     {
-        scoreTmp.text = score.ToString();
+        ChosenScore = 0;
+        SavedScore = 0;
+        GeneralScore = 0;
+    }
+
+    [ClientRpc]
+    public void SetPlayerName(string name)
+    {
+        playerNameTmp.text = name;
+    }
+
+    private void UpdateUiScoreText(TextMeshPro scoreTmp, int oldScore, int newScore)
+    {
+        DOTween.To(() => oldScore, x => oldScore = x, newScore, 0.25f)
+            .OnUpdate(() =>  scoreTmp.text = oldScore.ToString())
+            .SetEase(Ease.Linear);
+       ;
     }
 
     private void OnChosenScoreChange(int oldValue, int newValue)
     {
-        UpdateUiScoreText(chosenScoreTMP, newValue);
+        UpdateUiScoreText(chosenScoreTMP, oldValue,newValue);
     }
 
     private void OnSavedScoreChange(int oldValue, int newValue)
     {
-        UpdateUiScoreText(savedScoreTMP, newValue);
+        UpdateUiScoreText(savedScoreTMP, oldValue,newValue);
     }
 
     private void OnGeneralScoreChange(int oldValue, int newValue)
     {
-        UpdateUiScoreText(generalScoreTMP, newValue);
+        UpdateUiScoreText(generalScoreTMP, oldValue,newValue);
     }
     
 }

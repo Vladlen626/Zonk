@@ -349,7 +349,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  scaleSpeed: 0.05
+  animSpeed: 0.15
+  model: {fileID: 6175499639336008497}
 --- !u!65 &942724093589517340
 BoxCollider:
   m_ObjectHideFlags: 0

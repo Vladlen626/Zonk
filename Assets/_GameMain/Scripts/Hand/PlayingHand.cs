@@ -13,28 +13,33 @@ public class PlayingHand : NetworkBehaviour
     
     [HideInInspector] public UnityEvent OnTurnEnd;
     
-    [Header("DiceControllers")]
+    [Header("Controllers")]
     [SerializeField] private SavedDiceController savedDices;
     [SerializeField] private RollDiceController rollDices;
     [SerializeField] private ChosenDiceController chosenDices;
+    [SerializeField] private HandScoreController handScoreController;
     
     [Header("Buttons")]
     [SerializeField] private ButtonNetworkObject reRollButton;
     [SerializeField] private ButtonNetworkObject endTurnButton;
     
-    private ScoreController scoreController;
 
     [Command(requiresAuthority = false)]
-    public void CmdSetOwner(Player player)
+    public void CmdSetOwner(Player player, int playerGeneralScore, Dice[] playerDices)
     {
         ownerNetId = player.netId;
-        SetPlayerDices(DiceManager.Instance.GetPlayerDices(ownerNetId));
+        SetPlayerDices(playerDices);
         reRollButton.CmdSetOwner(ownerNetId);
         endTurnButton.CmdSetOwner(ownerNetId);
-        scoreController = player.GetScoreController();
-        savedDices.SetScoreController(scoreController);
-        chosenDices.SetScoreController(scoreController);
+        handScoreController.SetPlayerName(player.name);
+        handScoreController.ResetScore();
+        handScoreController.GeneralScore = playerGeneralScore;
+        savedDices.SetScoreController(handScoreController);
+        chosenDices.SetScoreController(handScoreController);
+        EnableButtons();
     }
+    
+    // _____________ Private _____________
 
     private void Start()
     {
@@ -45,7 +50,7 @@ public class PlayingHand : NetworkBehaviour
     
     private void SaveDices()
     {
-        if (scoreController.ChosenScore <= 0) return;
+        if (handScoreController.ChosenScore <= 0) return;
         rollDices.RemoveDices(chosenDices.GetDices());
         savedDices.SaveDices(chosenDices.GetDices());
     }
@@ -83,6 +88,7 @@ public class PlayingHand : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void HandleEndTurn()
     {
+        DisableButtons();
         StartCoroutine(nameof(EndTurn));
     }
 
@@ -91,15 +97,16 @@ public class PlayingHand : NetworkBehaviour
         SaveDices();
         savedDices.ClearDices();
         savedDices.SaveScore();
+        GameManager.I.SavePlayerScore(netId, handScoreController.GeneralScore);
         UnChoseAllDices();
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1f);
         OnTurnEnd.Invoke();
     }
 
     [Command(requiresAuthority = false)]
     private void HandleScoreChanged()
     {
-        if (scoreController.ChosenScore <= 0)
+        if (handScoreController.ChosenScore <= 0)
             DisableButtons();
         else
             EnableButtons();
