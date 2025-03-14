@@ -19,9 +19,10 @@ public class PlayingHand : NetworkBehaviour
     [SerializeField] private ChosenDiceController chosenDices;
     [SerializeField] private HandScoreController handScoreController;
     
-    [Header("Buttons")]
+    [Header("Objects")]
     [SerializeField] private ButtonNetworkObject reRollButton;
     [SerializeField] private ButtonNetworkObject endTurnButton;
+    [SerializeField] private RotateObject rollPlatform;
     
 
     [Command(requiresAuthority = false)]
@@ -64,15 +65,15 @@ public class PlayingHand : NetworkBehaviour
     private IEnumerator RollDices()
     {
         SaveDices();
-        yield return new WaitForSeconds(0.3f);
         DisableButtons();
-        
+        yield return new WaitForSeconds(1f);
         if (rollDices.IsEmpty())
         {
             yield return new WaitForSeconds(0.3f);
             RestoreRollDices();
         }
         rollDices.Roll();
+        rollPlatform.StartRotationAndScale(8,2.5f);
         if (rollDices.IsRollSuccessful()) yield break;
         yield return new WaitForSeconds(0.3f);
         savedDices.ResetScore();
