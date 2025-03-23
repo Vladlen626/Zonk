@@ -7,7 +7,6 @@ public class PlayerCameraController : NetworkBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float mouseSensitivity = 100f;
     [SerializeField] private Vector2 rotationClamp;
-    [SerializeField] private GameObject targetCursor;
 
     private float xRotation = 0f;
     private float yRotation = 0f;
@@ -19,7 +18,6 @@ public class PlayerCameraController : NetworkBehaviour
 
     private void OnEnable()
     {
-        targetCursor.SetActive(true);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         xRotation = -40f;
@@ -28,7 +26,6 @@ public class PlayerCameraController : NetworkBehaviour
 
     private void OnDisable()
     {
-        targetCursor.SetActive(false);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
