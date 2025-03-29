@@ -22,9 +22,7 @@ public class PlayingHand : NetworkBehaviour
     [Header("Objects")]
     [SerializeField] private ButtonNetworkObject reRollButton;
     [SerializeField] private ButtonNetworkObject endTurnButton;
-    [SerializeField] private RotateObject rollPlatform;
     
-
     [Command(requiresAuthority = false)]
     public void CmdSetOwner(Player player, int playerGeneralScore, Dice[] playerDices)
     {
@@ -32,7 +30,7 @@ public class PlayingHand : NetworkBehaviour
         SetPlayerDices(playerDices);
         reRollButton.CmdSetOwner(ownerNetId);
         endTurnButton.CmdSetOwner(ownerNetId);
-        handScoreController.SetPlayerName(player.name);
+        handScoreController.SetPlayerName(player.playerName);
         handScoreController.ResetScore();
         handScoreController.GeneralScore = playerGeneralScore;
         savedDices.SetScoreController(handScoreController);
@@ -73,7 +71,6 @@ public class PlayingHand : NetworkBehaviour
             RestoreRollDices();
         }
         rollDices.Roll();
-        rollPlatform.StartRotationAndScale(8,2.5f);
         if (rollDices.IsRollSuccessful()) yield break;
         yield return new WaitForSeconds(0.3f);
         savedDices.ResetScore();

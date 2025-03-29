@@ -1,5 +1,8 @@
 using System;
+using DG.Tweening;
+using FMODUnity;
 using Mirror;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerCameraController : NetworkBehaviour
@@ -13,7 +16,10 @@ public class PlayerCameraController : NetworkBehaviour
     private void Start()
     {
         playerCamera.enabled = isLocalPlayer;
-        playerCamera.GetComponent<AudioListener>().enabled = isLocalPlayer;
+        if (isLocalPlayer)
+        {
+            playerCamera.AddComponent<StudioListener>();
+        }
     }
 
     private void OnEnable()
@@ -43,4 +49,5 @@ public class PlayerCameraController : NetworkBehaviour
         
         transform.localRotation =  Quaternion.Euler(xRotation, yRotation, 0f);
     }
+
 }

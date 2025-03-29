@@ -12,9 +12,8 @@ public class DiceVisualController : NetworkBehaviour
     [SerializeField] private float yOffset = 0.02f;
     [SerializeField] private Transform model;
 
-
-    private readonly float MOVE_TIME = 1f;
-    private bool isLevitateble;
+    private readonly float MOVE_TIME = 0.25f;
+    private bool isRolling;
     public void SetSideMesh(int sideValue)
     {
         Hide();
@@ -50,18 +49,24 @@ public class DiceVisualController : NetworkBehaviour
     
     public void PlayRollAnimation()
     {
-        isLevitateble = false;
+        AudioManager.inst.PlaySound(SoundNames.DiceRoll);
+        isRolling = true;
         DOTween.Sequence()
-            .Append(transform.DOMove(transform.position + Vector3.up * 0.2f, MOVE_TIME/2).SetEase(Ease.Linear))
-            .Join(transform.DORotate(Vector3.one * 180, MOVE_TIME/2).SetEase(Ease.Linear))
-            .Append(transform.DORotate(Vector3.one * Random.Range(360, 720) * 5, MOVE_TIME*2, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad))
+            .Append(transform.DOMove(transform.position + Vector3.up * 0.2f, MOVE_TIME * 2).SetEase(Ease.Linear))
+            .Join(transform.DORotate(Vector3.one * 180, MOVE_TIME * 2).SetEase(Ease.Linear))
+            .Append(transform.DORotate(Vector3.one * Random.Range(360, 720) * 5, MOVE_TIME * 8, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad))
             .Append(transform.DOMove(transform.position, MOVE_TIME/2).SetEase(Ease.Linear))
             .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME/2).SetEase(Ease.Linear))
-            .OnComplete(() => isLevitateble = true);
+            .OnComplete(() =>
+            {
+                AudioManager.inst.PlaySound(SoundNames.DiceRoll);
+                isRolling = false;
+            });
     }
 
     public void MoveToSavePosition(Vector3 savePosition)
     {
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         DOTween.Sequence()
             .Append(transform.DOJump(savePosition, 0.2f, 2, MOVE_TIME).SetEase(Ease.InOutQuad))
             .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME).SetEase(Ease.InOutQuad));
@@ -95,14 +100,16 @@ public class DiceVisualController : NetworkBehaviour
     [ClientRpc]
     private void RpcLevitate()
     {
-        //if (!isLevitateble) return;
+        if (isRolling) return;
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         model.DOLocalMove(Vector3.up * yOffset, animSpeed);
     }
     
     [ClientRpc]
     private void RpcGrounded()
     {
-        //if (!isLevitateble) return;
+        if (isRolling) return;
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         model.DOLocalMove(Vector3.zero , animSpeed);
     }
 

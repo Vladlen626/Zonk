@@ -6,9 +6,7 @@ using UnityEngine.Events;
 public class ButtonNetworkObject : NetworkBehaviour
 {
     [SyncVar] private uint ownerNetId;
-
-    [SyncVar(hook = nameof(OnVisibilityChange))]
-    private bool isVisible;
+    [SyncVar] private bool isEnable;
 
     private bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
 
@@ -19,17 +17,15 @@ public class ButtonNetworkObject : NetworkBehaviour
     {
         ownerNetId = newOwnerNetId;
     }
-
+    
     public void Enable()
     {
-        isVisible = true;
-        Show();
+        isEnable = true;
     }
 
     public void Disable()
     {
-        isVisible = false;
-        Hide();
+        isEnable = false;
     }
 
     // _____________ Private _____________
@@ -37,68 +33,29 @@ public class ButtonNetworkObject : NetworkBehaviour
 
     protected virtual void CallButtonPressed()
     {
+        if (!isEnable) return;
+        AudioManager.inst.PlaySound(SoundNames.ButtonPressed);
         OnButtonPressed.Invoke();
     }
     
     private void OnMouseDown()
     {
-        if (!IsOwner || !isVisible) return;
+        if (!IsOwner) return;
         Pressed();
     }
     
-    private void OnMouseUp()
-    {
-        if (!IsOwner || !isVisible) return;
-        Released();
-    }
-
 
     [Command(requiresAuthority = false)]
     private void Pressed()
     {
-        CallButtonPressed();
         RpcPressed();
+        CallButtonPressed();
     }
-
-    [Command(requiresAuthority = false)]
-    private void Released()
-    {
-        RpcReleased();
-    }
-    
     
     [ClientRpc]
     private void RpcPressed()
     {
         animator.Play("ButtonPressed", -1, 0f);
     }
-
-    [ClientRpc]
-    private void RpcReleased()
-    {
-        
-    }
     
-
-    private void Hide()
-    {
-        //transform.DOScale(Vector3.zero, 0.25f);
-    }
-
-    private void Show()
-    {
-        //transform.DOScale(Vector3.one, 0.25f);
-    }
-
-    private void OnVisibilityChange(bool oldValue, bool newValue)
-    {
-        if (newValue)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
-    }
 }

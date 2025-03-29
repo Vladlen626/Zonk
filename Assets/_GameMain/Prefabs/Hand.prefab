@@ -368,6 +368,7 @@ GameObject:
   - component: {fileID: 7761568849428164864}
   - component: {fileID: 5389951125032265820}
   - component: {fileID: 7500667729014346039}
+  - component: {fileID: 7364825660229700206}
   m_Layer: 0
   m_Name: EndTurn
   m_TagString: Untagged
@@ -432,6 +433,18 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.075
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7364825660229700206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979212129024859319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3445eb91a79adba4cb35ec10d302c6d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1427202444719873449
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,7 +733,6 @@ MonoBehaviour:
   handScoreController: {fileID: 1473351385588509217}
   reRollButton: {fileID: 784502863954474093}
   endTurnButton: {fileID: 5389951125032265820}
-  rollPlatform: {fileID: 8293004426654463106}
 --- !u!114 &1322887487237882108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -813,7 +825,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  targetObjectTransform: {fileID: 2294435411092978498}
   particleEffect: {fileID: 4454508172684168916}
 --- !u!1 &2427033938776488781
 GameObject:
@@ -16593,6 +16604,7 @@ GameObject:
   - component: {fileID: 7046646960311104720}
   - component: {fileID: 784502863954474093}
   - component: {fileID: 2149797832013521109}
+  - component: {fileID: 7260113505073864798}
   m_Layer: 0
   m_Name: ReRollCup
   m_TagString: Untagged
@@ -16659,6 +16671,18 @@ CapsuleCollider:
   m_Height: 0.28
   m_Direction: 1
   m_Center: {x: 0, y: 0.1, z: 0}
+--- !u!114 &7260113505073864798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6984745935569804006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3445eb91a79adba4cb35ec10d302c6d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7063875314878917101
 GameObject:
   m_ObjectHideFlags: 0
@@ -17432,7 +17456,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6302451699616224090}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.5281875, y: -0.04152058, z: -129.90524}
 --- !u!1 &8551317319901789975
 GameObject:
   m_ObjectHideFlags: 0

@@ -184,6 +184,7 @@ GameObject:
   - component: {fileID: 6742910998227781833}
   - component: {fileID: 3275905834369180840}
   - component: {fileID: 705382984859784636}
+  - component: {fileID: 5007038850461219214}
   - component: {fileID: 7097413120173092117}
   - component: {fileID: 6142452730427084504}
   - component: {fileID: 942724093589517340}
@@ -291,6 +292,18 @@ MonoBehaviour:
   - value: 6
   diceVisualController: {fileID: 7097413120173092117}
   type: 0
+--- !u!114 &5007038850461219214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576330737298761373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3445eb91a79adba4cb35ec10d302c6d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7097413120173092117
 MonoBehaviour:
   m_ObjectHideFlags: 0

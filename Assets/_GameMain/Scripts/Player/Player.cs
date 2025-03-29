@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using FMODUnity;
 using Mirror;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Player : NetworkBehaviour
 {
-    [HideInInspector] public string name;
+    [HideInInspector] public string playerName;
     public DiceType[] diceTypes;
 
     [SerializeField] private ViewManager viewManager;
@@ -33,7 +35,6 @@ public class Player : NetworkBehaviour
 
     public void SetName(int playerIdx)
     {
-        name = "Player " + playerIdx;
+        playerName = "Player " + playerIdx;
     }
-    
 }

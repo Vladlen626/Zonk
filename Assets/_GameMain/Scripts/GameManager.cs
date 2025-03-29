@@ -100,6 +100,7 @@ public class GameManager : NetworkBehaviour
     {
         SetPlayersToDefaultView();
         yield return new WaitForSeconds(0.35f);
+        ShakePlayersCam();
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
         UpdatePlayingHandOwner();
         MovePlayingHand(currentPlayerIndex);
@@ -113,6 +114,16 @@ public class GameManager : NetworkBehaviour
             player.GetViewManager().ResetViewToDefault();
         }
     }
+    
+    [Server]
+    private void ShakePlayersCam()
+    {
+        foreach (var player in players)
+        {
+            player.GetViewManager().Shake();
+        }
+    }
+    
 
     [Server]
     private bool CheckFinishGameCondition()
