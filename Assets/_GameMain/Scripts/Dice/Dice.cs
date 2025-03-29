@@ -43,8 +43,8 @@ public class Dice : NetworkBehaviour
         isChosen = false;
         isSaved = false;
         currentSideValue = 0;
-        diceVisualController.SetSideMesh(currentSideValue);
         diceVisualController.UpdateChosenVisual(isChosen);
+        diceVisualController.SetSideMesh(currentSideValue);
     }
 
     public int GetCurrentSideValue()
@@ -55,6 +55,7 @@ public class Dice : NetworkBehaviour
     public void Chose()
     {
         isChosen = true;
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         diceVisualController.UpdateChosenVisual(isChosen);
         onDiceChosen.Invoke(this);
     }
@@ -62,6 +63,7 @@ public class Dice : NetworkBehaviour
     public void UnChose()
     {
         isChosen = false;
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         diceVisualController.UpdateChosenVisual(isChosen);
         onDiceUnChosen.Invoke(this);
     }

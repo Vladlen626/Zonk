@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8375029075366338811}
   - component: {fileID: 976314413751373121}
   - component: {fileID: 1630362897204667770}
+  - component: {fileID: 1750206323990236002}
   m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -128,6 +129,20 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1750206323990236002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601008067644841942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nonRigidbodyVelocity: 0
+  attenuationObject: {fileID: 0}
 --- !u!1 &1002432117493351394
 GameObject:
   m_ObjectHideFlags: 0
@@ -183,7 +198,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  name: 
+  playerName: 
   diceTypes: 000000000000000000000000000000000000000000000000
   viewManager: {fileID: 5020201811296160423}
 --- !u!114 &5020201811296160423

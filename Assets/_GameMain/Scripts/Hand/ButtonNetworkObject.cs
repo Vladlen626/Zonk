@@ -33,9 +33,16 @@ public class ButtonNetworkObject : NetworkBehaviour
 
     protected virtual void CallButtonPressed()
     {
-        if (!isEnable) return;
-        AudioManager.inst.PlaySound(SoundNames.ButtonPressed);
-        OnButtonPressed.Invoke();
+        if (isEnable)
+        {
+            AudioManager.inst.PlaySound(SoundNames.ButtonPressed);
+            OnButtonPressed.Invoke();
+        }
+        else
+        {
+            AudioManager.inst.PlaySound(SoundNames.Error);
+        }
+        
     }
     
     private void OnMouseDown()

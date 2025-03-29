@@ -16,10 +16,7 @@ public class PlayerCameraController : NetworkBehaviour
     private void Start()
     {
         playerCamera.enabled = isLocalPlayer;
-        if (isLocalPlayer)
-        {
-            playerCamera.AddComponent<StudioListener>();
-        }
+        playerCamera.GetComponent<StudioListener>().enabled = isLocalPlayer;
     }
 
     private void OnEnable()

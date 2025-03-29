@@ -101,6 +101,7 @@ public class GameManager : NetworkBehaviour
         SetPlayersToDefaultView();
         yield return new WaitForSeconds(0.35f);
         ShakePlayersCam();
+        AudioManager.inst.PlaySound(SoundNames.MoveHand);
         currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
         UpdatePlayingHandOwner();
         MovePlayingHand(currentPlayerIndex);

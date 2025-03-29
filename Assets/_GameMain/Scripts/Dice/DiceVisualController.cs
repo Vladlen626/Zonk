@@ -97,19 +97,15 @@ public class DiceVisualController : NetworkBehaviour
         RpcReleased();
     }
     
-    [ClientRpc]
     private void RpcLevitate()
     {
         if (isRolling) return;
-        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         model.DOLocalMove(Vector3.up * yOffset, animSpeed);
     }
     
-    [ClientRpc]
     private void RpcGrounded()
     {
         if (isRolling) return;
-        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         model.DOLocalMove(Vector3.zero , animSpeed);
     }
 
