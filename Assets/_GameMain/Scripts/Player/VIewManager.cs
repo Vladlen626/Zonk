@@ -71,11 +71,12 @@ public class ViewManager : NetworkBehaviour
     [ClientRpc]
     public void Shake()
     {
+        var originalPos = cameraRig.position;
         if (!isLocalPlayer) return;
-        cameraRig.DOShakePosition(0.3f, 0.25f, 50, 180f)
+        cameraRig.DOShakePosition(0.15f, 0.1f, 30, 180f)
             .OnComplete(() =>
             {
-                cameraRig.position = defaultPosition.position;
+                cameraRig.position = originalPos;
             });
     }
 

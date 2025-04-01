@@ -57,8 +57,8 @@ public class GameManager : NetworkBehaviour
             players.Remove(player);
         }
     }
-
-    [Server]
+    
+    [Command]
     public void SavePlayerScore(uint playerNetId, int score)
     {
         playersScoreDict[playerNetId] = score;
@@ -84,7 +84,13 @@ public class GameManager : NetworkBehaviour
         }
 
         scoreGoalTmp.text = "Goal: " + scoreGoal;
-        playingHand.OnTurnEnd.AddListener(EndTurn);
+        playingHand.OnTurnEnd += EndTurn;
+        playingHand.OnRollFinish += ShakePlayersCam;
+    }
+
+    private void OnDestroy()
+    {
+        playingHand.OnTurnEnd -= EndTurn;
     }
 
     [Server]
@@ -124,7 +130,6 @@ public class GameManager : NetworkBehaviour
             player.GetViewManager().Shake();
         }
     }
-    
 
     [Server]
     private bool CheckFinishGameCondition()
@@ -133,8 +138,7 @@ public class GameManager : NetworkBehaviour
         RpcAnnouncePlayerWin();
         return true;
     }
-
-
+    
     [Server]
     private void UpdatePlayingHandOwner()
     {
@@ -148,8 +152,8 @@ public class GameManager : NetworkBehaviour
         foreach (var playerDice in diceManager.GetPlayerDices(playerNetId))
         {
             playerDice.Hide();
-            playerDice.onDiceChosen.RemoveAllListeners();
-            playerDice.onDiceUnChosen.RemoveAllListeners();
+            playerDice.onDiceChosen = null;
+            playerDice.onDiceUnChosen = null;
         }
     }
 

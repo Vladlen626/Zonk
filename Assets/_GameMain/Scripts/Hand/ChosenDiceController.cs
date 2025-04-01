@@ -20,8 +20,8 @@ public class ChosenDiceController : NetworkBehaviour
     {
         foreach (var dice in diceDeck)
         {
-            dice.onDiceChosen.AddListener(AddDiceToChosen);
-            dice.onDiceUnChosen.AddListener(RemoveDiceFromChosen);
+            dice.onDiceChosen += AddDiceToChosen;
+            dice.onDiceUnChosen += RemoveDiceFromChosen;
         }
     }
     

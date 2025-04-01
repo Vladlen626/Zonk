@@ -1,5 +1,3 @@
-using System;
-using DG.Tweening;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,9 +6,11 @@ using Random = UnityEngine.Random;
 public class Dice : NetworkBehaviour
 {
     [SyncVar] private uint ownerNetId;
-
+    public UnityAction<Dice> onDiceChosen;
+    public UnityAction<Dice> onDiceUnChosen;
     public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
-
+    public DiceType type;
+    
     [SyncVar(hook = nameof(OnDiceSideUpdated))]
     private int currentSideValue;
 
@@ -18,12 +18,10 @@ public class Dice : NetworkBehaviour
     private bool isChosen;
 
     [SyncVar] private bool isSaved;
-
-    [HideInInspector] public UnityEvent<Dice> onDiceChosen = new UnityEvent<Dice>();
-    [HideInInspector] public UnityEvent<Dice> onDiceUnChosen = new UnityEvent<Dice>();
+    [SyncVar] private bool isRolling;
+    
     [SerializeField] private Side[] sides;
     [SerializeField] private DiceVisualController diceVisualController;
-    public DiceType type;
 
     [Command(requiresAuthority = false)]
     public void CmdSetOwner(uint newOwnerNetId)
@@ -35,7 +33,6 @@ public class Dice : NetworkBehaviour
     public void Roll()
     {
         SetSideValue(sides[Random.Range(0, sides.Length)].GetValue());
-        diceVisualController.PlayRollAnimation();
     }
 
     public void Hide()
@@ -57,7 +54,7 @@ public class Dice : NetworkBehaviour
         isChosen = true;
         AudioManager.inst.PlaySound(SoundNames.MoveDice);
         diceVisualController.UpdateChosenVisual(isChosen);
-        onDiceChosen.Invoke(this);
+        onDiceChosen?.Invoke(this);
     }
 
     public void UnChose()
@@ -65,18 +62,27 @@ public class Dice : NetworkBehaviour
         isChosen = false;
         AudioManager.inst.PlaySound(SoundNames.MoveDice);
         diceVisualController.UpdateChosenVisual(isChosen);
-        onDiceUnChosen.Invoke(this);
+        onDiceUnChosen?.Invoke(this);
     }
 
-    public void Save(Vector3 savePosition)
+    public void Save()
     {
         isSaved = true;
-        diceVisualController.MoveToSavePosition(savePosition);
     }
 
     public void UnSave()
     {
         isSaved = false;
+    }
+
+    public void SerRollState(bool state)
+    {
+        isRolling = state;
+    }
+
+    public DiceVisualController GetVisualController()
+    {
+        return diceVisualController;
     }
 
 // _____________ Private _____________
@@ -96,27 +102,15 @@ public class Dice : NetworkBehaviour
 
     private void OnMouseUp()
     {
-        if (!IsOwner || isSaved) return;
+        if (!IsOwner || isSaved || isRolling) return;
         CmdToggleChoseDice();
         diceVisualController.Released();
     }
 
     private void OnMouseDown()
     {
-        if (!IsOwner || isSaved) return;
+        if (!IsOwner || isSaved || isRolling) return;
         diceVisualController.Pressed();
-    }
-    
-    private void OnMouseEnter()
-    {
-        if (!IsOwner || isSaved) return;
-        diceVisualController.OnHover();
-    }
-
-    private void OnMouseExit()
-    {
-        if (!IsOwner || isSaved) return;
-        diceVisualController.OnUnHover();
     }
     
     private void SetSideValue(int sideValue)

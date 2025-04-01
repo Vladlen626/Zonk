@@ -30,7 +30,6 @@ public class ButtonNetworkObject : NetworkBehaviour
 
     // _____________ Private _____________
 
-
     protected virtual void CallButtonPressed()
     {
         if (isEnable)

@@ -18,6 +18,7 @@ public static class SoundNames
 {0}
 }}";
 
+    // ReSharper disable Unity.PerformanceAnalysis
     [MenuItem("Tools/Audio/Generate Sound Names", priority = 200)]
     public static void Generate()
     {

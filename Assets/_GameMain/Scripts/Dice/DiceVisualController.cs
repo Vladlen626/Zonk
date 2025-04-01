@@ -34,6 +34,27 @@ public class DiceVisualController : NetworkBehaviour
         }
         outline.OutlineColor = isChosen ? Color.red : Color.black;
     }
+    
+    
+    [Command]
+    public void Pressed()
+    {
+        RpcPressed();
+    }
+
+    [Command]
+    public void Released()
+    {
+        RpcPlayEffect();
+        RpcReleased();
+    }
+    [ClientRpc]
+    public void RpcPlayEffect()
+    {
+        bloodEffect.Play();
+    }
+
+    // _____________ Private _____________
 
     private void Hide()
     {
@@ -48,73 +69,14 @@ public class DiceVisualController : NetworkBehaviour
         meshes[sideIdx].enabled = true;
     }
     
-    public void PlayRollAnimation()
-    {
-        isRolling = true;
-        DOTween.Sequence()
-            .Append(transform.DOMove(transform.position + Vector3.up * 0.2f, MOVE_TIME * 2).SetEase(Ease.Linear))
-            .Join(transform.DORotate(Vector3.one * 180, MOVE_TIME * 2).SetEase(Ease.Linear))
-            .Append(transform.DORotate(Vector3.one * Random.Range(360, 720) * 5, MOVE_TIME * 8, RotateMode.FastBeyond360).SetEase(Ease.InOutQuad))
-            .Append(transform.DOMove(transform.position, MOVE_TIME/2).SetEase(Ease.Linear))
-            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME/2).SetEase(Ease.Linear))
-            .OnComplete(() =>
-            {
-                isRolling = false;
-            });
-    }
-
-    public void MoveToSavePosition(Vector3 savePosition)
-    {
-        RpcPlayEffect();
-        AudioManager.inst.PlaySound(SoundNames.MoveDice);
-        DOTween.Sequence()
-            .Append(transform.DOJump(savePosition, 0.2f, 2, MOVE_TIME).SetEase(Ease.InOutQuad))
-            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME).SetEase(Ease.InOutQuad))
-            .OnComplete(RpcPlayEffect);
-
-    }
-    
-    [Command]
-    public void OnHover()
-    {
-        //RpcLevitate();
-    }
-    
-    [Command]
-    public void OnUnHover()
-    {
-        //RpcGrounded();
-    }
-
-    [Command]
-    public void Pressed()
-    {
-        RpcPressed();
-    }
-
-    [Command]
-    public void Released()
-    {
-        RpcPlayEffect();
-        RpcReleased();
-    }
-    
     private void RpcLevitate()
     {
-        if (isRolling) return;
         model.DOLocalMove(Vector3.up * yOffset, animSpeed);
     }
     
     private void RpcGrounded()
     {
-        if (isRolling) return;
         model.DOLocalMove(Vector3.zero , animSpeed);
-    }
-
-    [ClientRpc]
-    private void RpcPlayEffect()
-    {
-        bloodEffect.Play();
     }
     
     [ClientRpc]

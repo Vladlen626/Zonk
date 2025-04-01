@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
@@ -11,7 +12,8 @@ public class PlayingHand : NetworkBehaviour
     [SyncVar] private uint ownerNetId;
     public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
     
-    [HideInInspector] public UnityEvent OnTurnEnd;
+    public UnityAction OnTurnEnd;
+    public UnityAction OnRollFinish;
 
     [Header("Params")] 
     [SerializeField] private float rollTime;
@@ -50,7 +52,7 @@ public class PlayingHand : NetworkBehaviour
         reRollButton.OnButtonPressed.AddListener(HandleRollDices);
         endTurnButton.OnButtonPressed.AddListener(HandleEndTurn);
     }
-    
+
     private void SaveDices()
     {
         if (handScoreController.ChosenScore <= 0) return;
@@ -77,7 +79,9 @@ public class PlayingHand : NetworkBehaviour
         rollDices.Roll(rollTime);
         rollEffect.Play();
         AudioManager.inst.PlaySound(SoundNames.Lyghting);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(rollTime * 0.95f);
+        OnRollFinish?.Invoke();
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
         rollEffect.Stop();
         if (rollDices.IsRollSuccessful()) yield break;
         savedDices.ResetScore();
@@ -105,7 +109,7 @@ public class PlayingHand : NetworkBehaviour
         GameManager.I.SavePlayerScore(netId, handScoreController.GeneralScore);
         UnChoseAllDices();
         yield return new WaitForSeconds(1f);
-        OnTurnEnd.Invoke();
+        OnTurnEnd?.Invoke();
     }
 
     [Command(requiresAuthority = false)]

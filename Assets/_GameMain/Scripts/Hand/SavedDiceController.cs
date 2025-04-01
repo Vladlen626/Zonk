@@ -61,6 +61,17 @@ public class SavedDiceController : MonoBehaviour
     {
         savedDices.Add(dice);
         dice.UnChose();
-        dice.Save(dicePoses[savedDices.Count - 1].position);
+        dice.Save();
+        MoveToSavePosition(dice, dicePoses[savedDices.Count - 1].position);
+    }
+    
+    public void MoveToSavePosition(Dice dice, Vector3 savePosition)
+    {
+        dice.GetVisualController().RpcPlayEffect();
+        AudioManager.inst.PlaySound(SoundNames.MoveDice);
+        DOTween.Sequence()
+            .Append(dice.transform.DOJump(savePosition, 0.2f, 2, 0.15f).SetEase(Ease.InOutQuad))
+            .Join(dice.transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), 0.15f).SetEase(Ease.InOutQuad))
+            .OnComplete(() => dice.GetVisualController().RpcPlayEffect());
     }
 }
