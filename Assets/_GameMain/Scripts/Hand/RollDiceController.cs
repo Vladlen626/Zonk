@@ -10,7 +10,7 @@ public class RollDiceController : NetworkBehaviour
 
     private readonly Vector2 ROLL_OFFSET = new Vector2(-0.02f, 0.02f);
 
-    public void Roll()
+    public void Roll(float rollTime)
     {
         for (var diceNum = 0; diceNum < rollDices.Count; diceNum++)
         {

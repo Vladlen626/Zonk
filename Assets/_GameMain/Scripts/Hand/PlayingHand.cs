@@ -12,6 +12,9 @@ public class PlayingHand : NetworkBehaviour
     public bool IsOwner => NetworkClient.connection != null && NetworkClient.connection.identity.netId == ownerNetId;
     
     [HideInInspector] public UnityEvent OnTurnEnd;
+
+    [Header("Params")] 
+    [SerializeField] private float rollTime;
     
     [Header("Controllers")]
     [SerializeField] private SavedDiceController savedDices;
@@ -20,6 +23,7 @@ public class PlayingHand : NetworkBehaviour
     [SerializeField] private HandScoreController handScoreController;
     
     [Header("Objects")]
+    [SerializeField] private ParticleSystem rollEffect;
     [SerializeField] private ButtonNetworkObject reRollButton;
     [SerializeField] private ButtonNetworkObject endTurnButton;
     
@@ -70,9 +74,12 @@ public class PlayingHand : NetworkBehaviour
             yield return new WaitForSeconds(0.3f);
             RestoreRollDices();
         }
-        rollDices.Roll();
+        rollDices.Roll(rollTime);
+        rollEffect.Play();
+        AudioManager.inst.PlaySound(SoundNames.Lyghting);
+        yield return new WaitForSeconds(3f);
+        rollEffect.Stop();
         if (rollDices.IsRollSuccessful()) yield break;
-        yield return new WaitForSeconds(0.3f);
         savedDices.ResetScore();
         HandleEndTurn();
     }

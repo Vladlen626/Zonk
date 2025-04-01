@@ -10,5 +10,7 @@ public static class SoundNames
     public const string DiceRoll = "DiceRoll";
     public const string MoveHand = "MoveHand";
     public const string Error = "Error";
+    public const string Lyghting = "Lyghting";
+    public const string UIWoosh = "UIWoosh";
 
 }

@@ -731,6 +731,7 @@ MonoBehaviour:
   rollDices: {fileID: 7877476263073718234}
   chosenDices: {fileID: 1322887487237882108}
   handScoreController: {fileID: 1473351385588509217}
+  rollEffect: {fileID: 4454508172684168916}
   reRollButton: {fileID: 784502863954474093}
   endTurnButton: {fileID: 5389951125032265820}
 --- !u!114 &1322887487237882108

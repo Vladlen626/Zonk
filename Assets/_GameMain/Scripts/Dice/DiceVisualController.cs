@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class DiceVisualController : NetworkBehaviour
 {
+    [SerializeField] private ParticleSystem bloodEffect;
     [SerializeField] private MeshRenderer[] meshes;
     [SerializeField] private Outline outline;
     [SerializeField] private float animSpeed = 0.15f;
@@ -31,7 +32,7 @@ public class DiceVisualController : NetworkBehaviour
         {
             RpcGrounded();
         }
-        outline.OutlineColor = isChosen ? Color.green : Color.black;
+        outline.OutlineColor = isChosen ? Color.red : Color.black;
     }
 
     private void Hide()
@@ -49,7 +50,6 @@ public class DiceVisualController : NetworkBehaviour
     
     public void PlayRollAnimation()
     {
-        AudioManager.inst.PlaySound(SoundNames.DiceRoll);
         isRolling = true;
         DOTween.Sequence()
             .Append(transform.DOMove(transform.position + Vector3.up * 0.2f, MOVE_TIME * 2).SetEase(Ease.Linear))
@@ -59,17 +59,18 @@ public class DiceVisualController : NetworkBehaviour
             .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME/2).SetEase(Ease.Linear))
             .OnComplete(() =>
             {
-                AudioManager.inst.PlaySound(SoundNames.DiceRoll);
                 isRolling = false;
             });
     }
 
     public void MoveToSavePosition(Vector3 savePosition)
     {
+        RpcPlayEffect();
         AudioManager.inst.PlaySound(SoundNames.MoveDice);
         DOTween.Sequence()
             .Append(transform.DOJump(savePosition, 0.2f, 2, MOVE_TIME).SetEase(Ease.InOutQuad))
-            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME).SetEase(Ease.InOutQuad));
+            .Join(transform.DORotate(new Vector3(0f, Random.Range(0f, 360f), 0f), MOVE_TIME).SetEase(Ease.InOutQuad))
+            .OnComplete(RpcPlayEffect);
 
     }
     
@@ -94,6 +95,7 @@ public class DiceVisualController : NetworkBehaviour
     [Command]
     public void Released()
     {
+        RpcPlayEffect();
         RpcReleased();
     }
     
@@ -109,6 +111,12 @@ public class DiceVisualController : NetworkBehaviour
         model.DOLocalMove(Vector3.zero , animSpeed);
     }
 
+    [ClientRpc]
+    private void RpcPlayEffect()
+    {
+        bloodEffect.Play();
+    }
+    
     [ClientRpc]
     private void RpcPressed()
     {

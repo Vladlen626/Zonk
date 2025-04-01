@@ -156,6 +156,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void RpcAnnouncePlayerWin()
     {
+        SetPlayersToDefaultView();
         scoreGoalTmp.text = "Game finish, player " + currentPlayerIndex + " win";
         playingHand.transform.localScale = Vector3.zero;
     }

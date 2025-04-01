@@ -68,8 +68,10 @@ public class ViewManager : NetworkBehaviour
         SwitchToView(View.Default);
     }
     
+    [ClientRpc]
     public void Shake()
     {
+        if (!isLocalPlayer) return;
         cameraRig.DOShakePosition(0.3f, 0.25f, 50, 180f)
             .OnComplete(() =>
             {
